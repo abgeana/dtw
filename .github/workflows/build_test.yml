@@ -1,0 +1,36 @@
+name: Building and Test
+
+on: [push, pull_request]
+
+jobs:
+  build_test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: install apt dependencies
+        run: |
+          sudo apt update
+          sudo apt install -q -y curl
+        env:
+          DEBIAN_FRONTEND: noninteractive
+
+      - name: install rust via rustup
+        run: |
+          curl -o rustup.sh -L https://sh.rustup.rs
+          chmod +x rustup.sh
+          ./rustup.sh -y
+
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - name: running cargo test
+        run: |
+          cargo test
+
+      - name: running cargo fmt
+        run: |
+          cargo fmt --check
+
+      - name: running cargo clippy
+        run: |
+          cargo clippy
